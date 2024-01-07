@@ -1,10 +1,10 @@
 # image will be published to ghcr.io/<user>/<name>
 name: plasma-bluefin-testing
 # description will be included in the image's metadata
-description: A starting point for further customization of uBlue images. Make your own! https://ublue.it/making-your-own/
+description: Testing image of a bluefin-like setup for Plasma6
 # the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/ublue-os/silverblue-main
-image-version: 39 # latest is also supported if you want new updates ASAP
+base-image: quay.io/fedora-ostree-desktops/kinoite
+image-version: rawhide # latest is also supported if you want new updates ASAP
 # module configuration, executed in order
 # you can include multiple instances of the same module
 modules:
