@@ -9,6 +9,18 @@ ARG BASE_IMAGE="${BASE_IMAGE_REGISTRY}/${BASE_IMAGE_NAME}"
 
 FROM ${BASE_IMAGE}:${IMAGE_MAJOR_VERSION} AS plasma-bluefin-testing
 
+# Remove the rpm provided Firefox, Discover backend for rpm, and PackageKit
+RUN rpm-ostree override remove \
+        firefox \
+        firefox-langpacks \
+        plasma-discover-rpm-ostree \
+        PackageKit-Qt6 \
+        PackageKit-glib \
+        filelight \
+        krfb \
+        krfb-libs \
+        kwrite
+
 # Clean up temp files and finalize container build.
 RUN rm -rf \
         /tmp/* \
