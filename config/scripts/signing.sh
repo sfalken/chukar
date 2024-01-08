@@ -11,6 +11,7 @@ cp /usr/share/ublue-os/cosign.pub /usr/etc/pki/containers/"$IMAGE_NAME".pub
 
 FILE=/usr/etc/containers/policy.json
 
+mkdir $(dirname "$FILE")
 yq -i -o=j '.transports.docker |=
     {"'"$IMAGE_REGISTRY"'/'"$IMAGE_NAME"'": [
             {
@@ -25,7 +26,9 @@ yq -i -o=j '.transports.docker |=
 + .' "$FILE"
 
 IMAGE_REF="ostree-image-signed:docker://$IMAGE_REGISTRY/$IMAGE_NAME"
+mkdir -p /usr/share/ublue-os/
 printf '{\n"image-ref": "'"$IMAGE_REF"'",\n"image-tag": "latest"\n}' > /usr/share/ublue-os/image-info.json
 
+mkdir -p /usr/etc/containers/registries.d/
 cp /usr/etc/containers/registries.d/ublue-os.yaml /usr/etc/containers/registries.d/"$IMAGE_NAME".yaml
 sed -i "s ghcr.io/ublue-os $IMAGE_REGISTRY g" /usr/etc/containers/registries.d/"$IMAGE_NAME".yaml
