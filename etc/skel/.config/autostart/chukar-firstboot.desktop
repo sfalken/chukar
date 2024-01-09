@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=Placeholder FirstBoot Setup
-Comment= Sets up Placeholder Desktop Correctly On FirstBoot
+Name=Chukar FirstBoot Setup
+Comment= Sets up Chukar Desktop Correctly On FirstBoot
 Exec=/usr/bin/mod-firstboot
 Icon=org.kde.konsole
 Type=Application

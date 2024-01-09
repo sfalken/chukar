@@ -1,6 +1,6 @@
 #!/bin/sh
 
-dbusRef=$(kdialog --title "Placeholder Desktop Firstboot" --geometry 600x400 --progressbar "Placeholder Desktop Firstboot" 8)
+dbusRef=$(kdialog --title "Chukar Desktop Firstboot" --geometry 600x400 --progressbar "Chukar Desktop Firstboot" 8)
 
 run_task() {
   local step="$1"
@@ -18,11 +18,11 @@ run_task() {
 }
 
 run_task 1 "Waiting for Internet connection" 'until /usr/bin/curl -s --max-time 5 https://flathub.org > /dev/null; do sleep 1; done'
-run_task 2 "Adding Flathub Repository" /usr/bin/flatpak remote-add --user --if-not-exists flathub /usr/share/placeholder/flathub.flatpakrepo
+run_task 2 "Adding Flathub Repository" /usr/bin/flatpak remote-add --user --if-not-exists flathub /usr/share/chukar/flathub.flatpakrepo
 run_task 3 "Installing Firefox" /usr/bin/flatpak install --user --noninteractive flathub org.mozilla.firefox
 run_task 4 "Installing KWrite" /usr/bin/flatpak install --user --noninteractive flathub org.kde.kwrite
 run_task 5 "Setting Default Browser" kwriteconfig6 --file ~/.config/kdeglobals --group General --key BrowserApplication org.mozilla.firefox.desktop
 
-run_task 7 "Cleaning up" rm -f ~/.config/autostart/placeholder-firstboot.desktop
+run_task 7 "Cleaning up" rm -f ~/.config/autostart/chukar-firstboot.desktop
 
 qdbus-qt6 $dbusRef close
