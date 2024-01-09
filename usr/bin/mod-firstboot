@@ -9,7 +9,7 @@ run_task() {
 
   qdbus-qt6 $dbusRef setLabelText "$label"
 
-  if eval "@"; then
+  if eval "$@"; then
     qdbus-qt6 $dbusRef Set "" value "$step"
   else
     kdialog --error "Operation Failed: $label"
