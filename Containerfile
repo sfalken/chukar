@@ -26,7 +26,8 @@ RUN mkdir -p /usr/share/placeholder && \
 
 # Install usr and etc files into Container
 COPY usr /
-COPY etc /
+COPY etc/skel/.config/autostart /
+RUN chmod +x /usr/bin/mod_firstboot
 
 # Clean up temp files and finalize container build.
 RUN rm -rf \
