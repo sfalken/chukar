@@ -17,7 +17,8 @@ RUN rpm-ostree override remove \
         filelight \
         krfb \
         krfb-libs \
-        kwrite
+        kwrite \
+        fedora-flathub-remote
 
 # Clean up temp files and finalize container build.
 RUN rm -rf \
