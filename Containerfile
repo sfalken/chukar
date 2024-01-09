@@ -23,6 +23,7 @@ RUN rpm-ostree override remove \
     rpm-ostree install \
         distrobox \
         python3-pip \
+        just \
         /tmp/rpms/*.rpm
 
 # Install flathub repo definition file
