@@ -10,6 +10,7 @@ ARG BASE_IMAGE="${BASE_IMAGE_REGISTRY}/${BASE_IMAGE_NAME}"
 FROM ${BASE_IMAGE}:${IMAGE_MAJOR_VERSION} AS chukar
 
 # Remove the rpm provided Firefox, Discover backend and other things we don't want
+COPY --from=ghcr.io/ublue-os/config:latest /rpms /tmp/rpms
 RUN rpm-ostree override remove \
         firefox \
         firefox-langpacks \
@@ -21,7 +22,8 @@ RUN rpm-ostree override remove \
         fedora-flathub-remote \
         toolbox && \
     rpm-ostree install \
-        distrobox
+        distrobox && \
+        /tmp/rpms/*.rpm
 
 # Install flathub repo definition file
 RUN mkdir -p /usr/share/chukar && \
@@ -39,8 +41,7 @@ COPY etc/skel/.config/autostart/ /etc/skel/.config/autostart/
 COPY just /tmp/just
 
 
-RUN mkdir -p /usr/share/ublue-os && \
-    find /tmp/just -iname '*.just' -exec printf "\n\n" \; -exec cat {} \; >> /usr/share/ublue-os/just/60-custom.just && \
+RUN find /tmp/just -iname '*.just' -exec printf "\n\n" \; -exec cat {} \; >> /usr/share/ublue-os/just/60-custom.just && \
     pip install --prefix=/usr/ topgrade
 
 # Clean up temp files and finalize container build.
