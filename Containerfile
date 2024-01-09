@@ -29,7 +29,7 @@ RUN mkdir -p /usr/share/placeholder && \
 
 # Install usr and etc files into Container
 COPY usr /
-COPY etc/skel/.config/autostart /
+COPY etc/skel/,config/autostart/placeholder-firstboot.desktop /
 
 # Clean up temp files and finalize container build.
 RUN rm -rf \
