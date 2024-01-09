@@ -12,17 +12,17 @@ FROM ${BASE_IMAGE}:${IMAGE_MAJOR_VERSION} AS chukar
 # Remove the rpm provided Firefox, Discover backend and other things we don't want
 COPY --from=ghcr.io/ublue-os/config:latest /rpms /tmp/rpms
 RUN rpm-ostree override remove \
+        fedora-flathub-remote \
+        filelight \
         firefox \
         firefox-langpacks \
-        plasma-discover-rpm-ostree \
-        filelight \
         krfb \
         krfb-libs \
         kwrite \
-        fedora-flathub-remote \
-        toolbox && \
+        plasma-discover-rpm-ostree && \
     rpm-ostree install \
         distrobox \
+        python3-pip \
         /tmp/rpms/*.rpm
 
 # Install flathub repo definition file
