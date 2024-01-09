@@ -17,7 +17,7 @@ run_task() {
   fi
 }
 
-run_task 1 "Waiting for Internet connection" 'until /usr/bin/ping -q -c 1 flathub.org; do sleep 1; done'
+run_task 1 "Waiting for Internet connection" 'until /usr/bin/curl -s --max-time 5 https://flathub.org > /dev/null; do sleep 1; done'
 run_task 2 "Adding Flathub Repository" /usr/bin/flatpak remote-add --user --if-not-exists flathub /usr/share/placeholder/flathub.flatpakrepo
 run_task 3 "Installing Firefox" /usr/bin/flatpak install --user --noninteractive flathub org.mozilla.firefox
 run_task 4 "Installing KWrite" /usr/bin/flatpak install --user --noninteractive flathub org.kde.kwrite
