@@ -27,9 +27,19 @@ RUN rpm-ostree override remove \
 RUN mkdir -p /usr/share/placeholder && \
     wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/share/placeholder
 
-# Install usr and etc files into Container
-COPY usr /
-COPY etc/skel/.config/autostart/placeholder-firstboot.desktop /
+# Starship Shell Prompt
+RUN curl -Lo /tmp/starship.tar.gz "https://github.com/starship/starship/releases/latest/download/starship-x86_64-unknown-linux-gnu.tar.gz" && \
+    tar -zxf /tmp/starship.tar.gz -C /tmp && \
+    install -c -m 0755 /tmp/starship /usr/bin && \
+    echo 'eval "$(starship init bash)"' >> /etc/bashrc
+
+# Copy files into Container
+COPY usr /usr
+COPY etc/skel/.config/autostart/ /etc/skel/.config/autostart/
+COPY just /tmp/just
+
+
+RUN find /tmp/just -iname '*.just' -exec printf "\n\n" \; -exec cat {} \; >> /usr/share/ublue-os/just/60-custom.just
 
 # Clean up temp files and finalize container build.
 RUN rm -rf \
