@@ -39,7 +39,8 @@ COPY etc/skel/.config/autostart/ /etc/skel/.config/autostart/
 COPY just /tmp/just
 
 
-RUN find /tmp/just -iname '*.just' -exec printf "\n\n" \; -exec cat {} \; >> /usr/share/ublue-os/just/60-custom.just
+RUN find /tmp/just -iname '*.just' -exec printf "\n\n" \; -exec cat {} \; >> /usr/share/ublue-os/just/60-custom.just && \
+    pip install --prefix=/usr/ topgrade
 
 # Clean up temp files and finalize container build.
 RUN rm -rf \
