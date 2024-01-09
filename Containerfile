@@ -20,6 +20,14 @@ RUN rpm-ostree override remove \
         kwrite \
         fedora-flathub-remote
 
+# Install flathub repo definition file
+RUN mkdir -p /usr/share/placeholder && \
+    wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/share/placeholder
+
+# Install usr and etc files into Container
+COPY usr /
+COPY etc /
+
 # Clean up temp files and finalize container build.
 RUN rm -rf \
         /tmp/* \
