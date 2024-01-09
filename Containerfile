@@ -22,7 +22,7 @@ RUN rpm-ostree override remove \
         fedora-flathub-remote \
         toolbox && \
     rpm-ostree install \
-        distrobox && \
+        distrobox \
         /tmp/rpms/*.rpm
 
 # Install flathub repo definition file
