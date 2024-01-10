@@ -1,0 +1,148 @@
+{
+	"all": {
+		"include": {
+			"chukar": [
+				"bash-color-prompt",
+				"cockpit-bridge",
+        "distrobox",
+				"evtest",
+				"fish",
+				"firewall-config",
+				"glow",
+				"gum",
+				"hplip",
+				"ifuse",
+				"input-remapper",
+        "just",
+				"libgda-sqlite",
+				"libgda",
+				"libimobiledevice",
+				"libratbag-ratbagd",
+				"libxcrypt-compat",
+				"make",
+				"mesa-libGLU",
+				"playerctl",
+				"pulseaudio-utils",
+				"python3-pip",
+				"samba-dcerpc",
+				"samba-ldb-ldap-modules",
+				"samba-winbind-clients",
+				"samba-winbind-modules",
+				"samba",
+				"solaar",
+				"stress-ng",
+				"tailscale",
+				"tmux",
+				"ublue-update",
+				"usbmuxd",
+				"wireguard-tools",
+				"xprop",
+				"yaru-theme",
+				"wl-clipboard",
+				"zsh"
+			],
+			"chukar-dx": [
+				"adobe-source-code-pro-fonts",
+				"cascadiacode-nerd-fonts",
+				"cockpit-machines",
+				"cockpit-networkmanager",
+				"cockpit-ostree",
+				"cockpit-pcp",
+				"cockpit-podman",
+				"cockpit-selinux",
+				"cockpit-storaged",
+				"cockpit-system",
+				"code",
+				"containerd.io",
+				"dbus-x11",
+        "devpod",
+				"distrobuilder",
+				"docker-ce",
+				"docker-ce-cli",
+				"docker-buildx-plugin",
+				"docker-compose-plugin",
+				"edk2-ovmf",
+				"genisoimage",
+				"google-droid-sans-mono-fonts",
+				"google-go-mono-fonts",
+				"ibm-plex-mono-fonts",
+				"incus",
+				"incus-agent",
+				"iotop",
+				"jetbrains-mono-fonts-all",
+				"kcli",
+				"libvirt",
+				"lxc",
+				"lxd-agent",
+				"lxd",
+				"mozilla-fira-mono-fonts",
+				"p7zip-plugins",
+				"p7zip",
+				"podman-compose",
+				"podman-plugins",
+				"podman-tui",
+				"podmansh",
+				"powerline-fonts",
+				"powertop",
+				"qemu-char-spice",
+				"qemu-device-display-virtio-gpu",
+				"qemu-device-display-virtio-vga",
+				"qemu-device-usb-redirect",
+				"qemu-img",
+				"qemu-system-x86-core",
+				"qemu-user-binfmt",
+				"qemu-user-static",
+				"qemu",
+				"ubuntu-nerd-fonts",
+				"ubuntumono-nerd-fonts",
+				"virt-manager",
+				"virt-viewer"
+			]
+		},
+		"exclude": {
+			"chukar": [
+        "fedora-flathub-remote",
+        "filelight",
+        "firefox",
+				"firefox-langpacks",
+        "krfb",
+        "krfb-libs",
+        "kwrite",
+        "plasma-discover-rpm-ostree",
+				"ublue-os-update-services"
+			],
+			"chukar": []
+		}
+	},
+	"38": {
+		"include": {
+			"chukar": [
+				"gnome-shell-extension-tailscale-status"
+			],
+			"chukar-dx": [],
+			"chukar-framework": []
+		},
+		"exclude": {
+			"chukar": [
+				"podman-docker"
+			],
+			"chukar-dx": []
+		}
+	},
+	"39": {
+		"include": {
+			"chukar": [
+				"input-leap"
+			],
+			"chukar-dx": [],
+			"chukar-framework": []
+		},
+		"exclude": {
+			"chukar": [
+				"podman-docker"
+			],
+			"chukar-dx": [],
+			"chukar-framework": []
+		}
+	}
+}
