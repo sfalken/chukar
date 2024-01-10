@@ -46,7 +46,6 @@ RUN /tmp/build.sh && \
     pip install --prefix=/usr/ topgrade && \
     cp /tmp/ublue-update.toml /usr/etc/ublue-update/ublue-update.toml && \
     systemctl enable rpm-ostree-countme.service && \
-    systemctl enable tailscaled.service && \
     systemctl enable dconf-update.service && \
     systemctl enable ublue-update.timer && \
     systemctl --global enable ublue-user-flatpak-manager.service && \
