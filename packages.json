@@ -25,8 +25,6 @@
 				"python3-pip",
 				"samba-dcerpc",
 				"samba-ldb-ldap-modules",
-				"samba-winbind-clients",
-				"samba-winbind-modules",
 				"samba",
 				"solaar",
 				"stress-ng",
