@@ -3,6 +3,7 @@
 		"include": {
 			"chukar": [
 				"bash-color-prompt",
+        "btop",
 				"cockpit-bridge",
         "distrobox",
 				"evtest",
