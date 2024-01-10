@@ -27,8 +27,8 @@ RUN rpm-ostree override remove \
         /tmp/rpms/*.rpm
 
 # Install flathub repo definition file
-RUN mkdir -p /usr/share/chukar && \
-    wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/share/chukar
+RUN mkdir -p /usr/etc/flatpak/remotes.d && \
+    wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/etc/flatpak/remotes.d
 
 # Starship Shell Prompt
 RUN curl -Lo /tmp/starship.tar.gz "https://github.com/starship/starship/releases/latest/download/starship-x86_64-unknown-linux-gnu.tar.gz" && \
@@ -40,10 +40,16 @@ RUN curl -Lo /tmp/starship.tar.gz "https://github.com/starship/starship/releases
 COPY usr /usr
 COPY etc/skel/.config/autostart/ /etc/skel/.config/autostart/
 COPY just /tmp/just
+COPY build.sh /tmp/build.sh
+COPY image-info.sh /tmp/image-info.sh
+COPY usr/etc/ublue-update/ublue-update.toml /tmp/ublue-update.toml
 
 
-RUN find /tmp/just -iname '*.just' -exec printf "\n\n" \; -exec cat {} \; >> /usr/share/ublue-os/just/60-custom.just && \
-    pip install --prefix=/usr/ topgrade
+RUN /tmp/build.sh && \
+    /tmp/image-info.sh && \
+    find /tmp/just -iname '*.just' -exec printf "\n\n" \; -exec cat {} \; >> /usr/share/ublue-os/just/60-custom.just && \
+    pip install --prefix=/usr/ topgrade && \
+    cp /tmp/ublue-update.toml /usr/etc/ublue-update/ublue-update.toml
 
 # Clean up temp files and finalize container build.
 RUN rm -rf \
