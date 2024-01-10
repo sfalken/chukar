@@ -47,7 +47,6 @@ RUN /tmp/build.sh && \
     cp /tmp/ublue-update.toml /usr/etc/ublue-update/ublue-update.toml && \
     systemctl enable rpm-ostree-countme.service && \
     systemctl enable dconf-update.service && \
-    systemctl enable ublue-update.timer && \
     systemctl --global enable ublue-user-flatpak-manager.service && \
     systemctl --global enable ublue-user-setup.service && \
     fc-cache -f /usr/share/fonts/ubuntu && \
