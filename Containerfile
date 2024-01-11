@@ -83,4 +83,58 @@ COPY workarounds.sh \
      image-info.sh \
      /tmp
 
+# Apply IP Forwarding before installing Docker to prevent breaking LXC networking
+RUN sysctl -p
+
+RUN wget https://copr.fedorainfracloud.org/coprs/ganto/lxc4/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
+    wget https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
+    wget https://copr.fedorainfracloud.org/coprs/karmab/kcli/repo/fedora-"${FEDORA_MAJOR_VERSION}"/karmab-kcli-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/karmab-kcli-fedora-"${FEDORA_MAJOR_VERSION}".repo
+
+# Handle packages via packages.json
+RUN /tmp/build.sh && \
+    /tmp/image-info.sh
+
+## power-profiles-deamon with amd p-state support, will be removed when upstreamed.
+RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging power-profiles-daemon
+
+RUN wget https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -O /tmp/docker-compose && \
+    install -c -m 0755 /tmp/docker-compose /usr/bin
+
+COPY --from=cgr.dev/chainguard/dive:latest /usr/bin/dive /usr/bin/dive
+COPY --from=cgr.dev/chainguard/flux:latest /usr/bin/flux /usr/bin/flux
+COPY --from=cgr.dev/chainguard/helm:latest /usr/bin/helm /usr/bin/helm
+COPY --from=cgr.dev/chainguard/ko:latest /usr/bin/ko /usr/bin/ko
+COPY --from=cgr.dev/chainguard/minio-client:latest /usr/bin/mc /usr/bin/mc
+COPY --from=cgr.dev/chainguard/kubectl:latest /usr/bin/kubectl /usr/bin/kubectl
+
+RUN curl -Lo ./kind "https://github.com/kubernetes-sigs/kind/releases/latest/download/kind-$(uname)-amd64" && \
+    chmod +x ./kind && \
+    mv ./kind /usr/bin/kind
+
+# Install kns/kctx and add completions for Bash
+RUN wget https://raw.githubusercontent.com/ahmetb/kubectx/master/kubectx -O /usr/bin/kubectx && \
+    wget https://raw.githubusercontent.com/ahmetb/kubectx/master/kubens -O /usr/bin/kubens && \
+    chmod +x /usr/bin/kubectx /usr/bin/kubens
+
+# Set up services
+RUN systemctl enable docker.socket && \
+    systemctl enable podman.socket && \
+    systemctl enable swtpm-workaround.service && \
+    systemctl enable bluefin-dx-groups.service && \
+    systemctl enable --global bluefin-dx-user-vscode.service && \
+    systemctl disable pmie.service && \
+    systemctl disable pmlogger.service
+
+RUN /tmp/workarounds.sh
+
+# Clean up repos, everything is on the image so we don't need them
+RUN rm -f /etc/yum.repos.d/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
+    rm -f /etc/yum.repos.d/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
+    rm -f /etc/yum.repos.d/karmab-kcli-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
+    rm -f /etc/yum.repos.d/vscode.repo && \
+    rm -f /etc/yum.repos.d/docker-ce.repo && \
+    rm -f /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo && \
+    rm -f /etc/yum.repos.d/fedora-cisco-openh264.repo && \
+    rm -rf /tmp/* /var/* && \
+    ostree container commit
 
