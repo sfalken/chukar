@@ -112,37 +112,6 @@ fish:
     sudo usermod $USER --shell /usr/bin/fish 
     printf "${USER}'s shell is now %s." "$(cat /etc/passwd | grep ":$UID:" | cut '-d:' '-f7')"
 
-# Install recommended GNOME extensions
-gnome-extensions:
-    pip install --upgrade gnome-extensions-cli
-    gext install tailscale-status@maxgallup.github.com
-    gext install nightthemeswitcher@romainvigier.fr
-    gext install pano@elhan.io
-    gext install weatheroclock@CleoMenezesJr.github.io
-
-# Enable or Disable Gnome-VRR
-gnome-vrr:
-    #!/usr/bin/env bash
-    if gsettings get org.gnome.mutter experimental-features | grep -q "variable-refresh-rate"
-    then
-      CURRENT_STATE="Enabled"
-    else
-      CURRENT_STATE="Disabled"
-    fi
-    echo "Gnome-VRR is currently ${CURRENT_STATE}"
-    echo "Enable or Disable Gnome-VRR"
-    OPTION=$(gum choose Enable Disable)
-    if [ "$OPTION" = "Enable" ]
-    then
-      echo "Enabling Gnome-VRR"
-      gsettings set org.gnome.mutter experimental-features "['variable-refresh-rate','scale-monitor-framebuffer']"
-    elif [ "$OPTION" = "Disable" ]
-    then
-      echo "Disabling Gnome-VRR"
-      gsettings set org.gnome.mutter experimental-features "['scale-monitor-framebuffer']"
-    fi
-    echo "To apply the changes make sure you logout and restart your session"
-
 # Install JetBrains Toolbox | https://www.jetbrains.com/toolbox-app/
 jetbrains-toolbox:
     #!/usr/bin/env bash
@@ -277,12 +246,6 @@ tensorflow:
     echo 'Follow the prompts and check the tutorial: https://www.tensorflow.org/tutorials/quickstart/beginner'
     podman pull docker.io/tensorflow/tensorflow:latest
     podman run -it -p 8888:8888 docker.io/tensorflow/tensorflow:latest-jupyter  # Start Jupyter server
-
-# Install a better on-screen-keyboard and gesture improvements
-touch:
-    pip install --upgrade gnome-extensions-cli
-    gext install improvedosk@nick-shmyrev.dev
-    gext install gestureImprovements@gestures
 
 # A preview of what the update system would look like in the future
 update-ng:
