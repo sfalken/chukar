@@ -112,7 +112,6 @@
 	"38": {
 		"include": {
 			"chukar": [
-				"gnome-shell-extension-tailscale-status"
 			],
 			"chukar-dx": [],
 			"chukar-framework": []
