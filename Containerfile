@@ -64,3 +64,23 @@ RUN rm -rf \
     ostree container commit && \
     mkdir -p /var/tmp && \
     chmod -R 1777 /var/tmp
+
+# chukar-dx developer experience image
+FROM chukar as chukar-dx
+
+ARG IMAGE_NAME="${IMAGE_NAME}"
+ARG IMAGE_VENDOR="${IMAGE_VENDOR}"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
+ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
+ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
+ARG PACKAGE_LIST="chukar-dx"
+
+COPY dx/usr /usr
+COPY dx/etc/yum.repos.d/ /etc/yum.repos.d/
+COPY workarounds.sh \
+     packages.json \
+     build.sh \
+     image-info.sh \
+     /tmp
+
+
