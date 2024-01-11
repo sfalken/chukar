@@ -86,9 +86,12 @@ COPY workarounds.sh \
 # Apply IP Forwarding before installing Docker to prevent breaking LXC networking
 RUN sysctl -p
 
+# wpewebkit-rawhide repo to be removed when F40 releases
 RUN wget https://copr.fedorainfracloud.org/coprs/ganto/lxc4/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     wget https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    wget https://copr.fedorainfracloud.org/coprs/karmab/kcli/repo/fedora-"${FEDORA_MAJOR_VERSION}"/karmab-kcli-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/karmab-kcli-fedora-"${FEDORA_MAJOR_VERSION}".repo
+    wget https://copr.fedorainfracloud.org/coprs/karmab/kcli/repo/fedora-"${FEDORA_MAJOR_VERSION}"/karmab-kcli-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/karmab-kcli-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
+    wget https://copr.fedorainfracloud.org/coprs/bunnyapocalypse/wpewebkit-rawhide/repo/fedora-"${FEDORA_MAJOR_VERSION}"/bunnyapocalypse-wpewebkit-rawhide-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/bunnyapocalypse-wpewebkit-rawhide-fedora-"${FEDORA_MAJOR_VERSION}".repo
+
 
 # Handle packages via packages.json
 RUN /tmp/build.sh && \
@@ -131,6 +134,7 @@ RUN /tmp/workarounds.sh
 RUN rm -f /etc/yum.repos.d/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     rm -f /etc/yum.repos.d/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     rm -f /etc/yum.repos.d/karmab-kcli-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
+    rm -f /etc/yum.repos.d/bunnyapocalypse-wpewebkit-rawhide-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     rm -f /etc/yum.repos.d/vscode.repo && \
     rm -f /etc/yum.repos.d/docker-ce.repo && \
     rm -f /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo && \
