@@ -34,7 +34,6 @@
 			],
 			"chukar-dx": [
 				"adobe-source-code-pro-fonts",
-				"cascadiacode-nerd-fonts",
 				"cockpit-machines",
 				"cockpit-networkmanager",
 				"cockpit-ostree",
@@ -84,8 +83,6 @@
 				"qemu-user-binfmt",
 				"qemu-user-static",
 				"qemu",
-				"ubuntu-nerd-fonts",
-				"ubuntumono-nerd-fonts",
 				"virt-manager",
 				"virt-viewer"
 			]
