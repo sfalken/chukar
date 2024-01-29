@@ -87,10 +87,10 @@ COPY workarounds.sh \
 RUN sysctl -p
 
 #  repo to be removed when F40 releases
-RUN wget https://copr.fedorainfracloud.org/coprs/ganto/lxc4/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    wget https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    wget https://copr.fedorainfracloud.org/coprs/karmab/kcli/repo/fedora-"${FEDORA_MAJOR_VERSION}"/karmab-kcli-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/karmab-kcli-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    wget https://copr.fedorainfracloud.org/coprs/sfaulken/chukar/repo/fedora-"${FEDORA_MAJOR_VERSION}"/sfaulken-chukar-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum/repos.d/sfaulken-chukar-fedora-"${FEDORA_MAJOR_VERSION}".repo
+RUN wget https://copr.fedorainfracloud.org/coprs/ganto/lxc4/repo/fedora-rawhide/ganto-lxc4-fedora-rawhide.repo -O /etc/yum.repos.d/ganto-lxc4-fedora-rawhide.repo && \
+    wget https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-rawhide/ublue-os-staging-fedora-rawhide.repo -O /etc/yum.repos.d/ublue-os-staging-fedora-rawhide.repo && \
+    wget https://copr.fedorainfracloud.org/coprs/karmab/kcli/repo/fedora-rawhide/karmab-kcli-fedora-rawhide.repo -O /etc/yum.repos.d/karmab-kcli-fedora-rawhide.repo && \
+    wget https://copr.fedorainfracloud.org/coprs/sfaulken/chukar/repo/fedora-rawhide/sfaulken-chukar-fedora-rawhide.repo -O /etc/yum/repos.d/sfaulken-chukar-fedora-rawhide.repo
 
 # Handle packages via packages.json
 RUN /tmp/build.sh && \

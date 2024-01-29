@@ -66,6 +66,7 @@
 				"lxd-agent",
 				"lxd",
 				"mozilla-fira-mono-fonts",
+        "nerd-fonts",
 				"p7zip-plugins",
 				"p7zip",
 				"podman-compose",
