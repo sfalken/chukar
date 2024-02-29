@@ -7,7 +7,7 @@ ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-40}"
 ARG TARGET_BASE="${TARGET_BASE:-chukar}"
 
 ## chukar image section
-FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS bluefin
+FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS chukar 
 
 ARG IMAGE_NAME="${IMAGE_NAME}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR}"
@@ -90,7 +90,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"$
     mkdir -p /var/tmp && \
     chmod -R 1777 /var/tmp
 
-## bluefin-dx developer edition image section
+## chukar-dx developer edition image section
 FROM chukar AS chukar-dx
 
 ARG IMAGE_NAME="${IMAGE_NAME}"
