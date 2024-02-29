@@ -76,7 +76,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"$
     systemctl --global enable ublue-user-setup.service && \
     fc-cache -f /usr/share/fonts/ubuntu && \
     fc-cache -f /usr/share/fonts/inter && \
-    find /tmp/just -iname '*.just' -exec printf "\n\n" \; -exec cat {} \; >> /usr/share/ublue-os/just/60-custom.just && \
+#    find /tmp/just -iname '*.just' -exec printf "\n\n" \; -exec cat {} \; >> /usr/share/ublue-os/just/60-custom.just && \
 #    rm -f /etc/yum.repos.d/tailscale.repo && \
     rm -f /etc/yum.repos.d/charm.repo && \
     rm -f /etc/yum.repos.d/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
