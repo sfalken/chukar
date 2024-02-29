@@ -67,7 +67,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"$
     sed -i '/AutoUpdate.*/ s/^#*/#/' /usr/etc/containers/systemd/users/bluefin-cli.container && \
     sed -i 's/ContainerName=bluefin/ContainerName=bluefin-cli/' /usr/etc/containers/systemd/users/bluefin-cli.container && \
     systemctl enable rpm-ostree-countme.service && \
-    systemctl enable tailscaled.service && \
+#    systemctl enable tailscaled.service && \
     systemctl enable dconf-update.service && \
     systemctl enable ublue-update.timer && \
     systemctl enable ublue-system-setup.service && \
@@ -77,7 +77,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"$
     fc-cache -f /usr/share/fonts/ubuntu && \
     fc-cache -f /usr/share/fonts/inter && \
     find /tmp/just -iname '*.just' -exec printf "\n\n" \; -exec cat {} \; >> /usr/share/ublue-os/just/60-custom.just && \
-    rm -f /etc/yum.repos.d/tailscale.repo && \
+#    rm -f /etc/yum.repos.d/tailscale.repo && \
     rm -f /etc/yum.repos.d/charm.repo && \
     rm -f /etc/yum.repos.d/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     echo "Hidden=true" >> /usr/share/applications/fish.desktop && \
