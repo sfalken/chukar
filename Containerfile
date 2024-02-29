@@ -27,24 +27,25 @@ COPY image-info.sh /tmp/image-info.sh
 # Copy ublue-update.toml to tmp first, to avoid being overwritten.
 COPY usr/etc/ublue-update/ublue-update.toml /tmp/ublue-update.toml
 
+## Disable AKMOD Installation
 # Add ublue kmods, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
-COPY --from=ghcr.io/ublue-os/akmods:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
-RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
-    wget https://negativo17.org/repos/fedora-multimedia.repo -O /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
-    if [[ "${FEDORA_MAJOR_VERSION}" -ge "39" ]]; then \
-        rpm-ostree install \
-            /tmp/akmods-rpms/kmods/*xpadneo*.rpm \
-            /tmp/akmods-rpms/kmods/*xone*.rpm \
-            /tmp/akmods-rpms/kmods/*openrazer*.rpm \
-            /tmp/akmods-rpms/kmods/*v4l2loopback*.rpm \
-            /tmp/akmods-rpms/kmods/*wl*.rpm \
-    ; fi && \
-    # Don't install evdi on asus because of conflicts
-    if grep -qv "asus" <<< "${AKMODS_FLAVOR}"; then \
-        rpm-ostree install \
-            /tmp/akmods-rpms/kmods/*evdi*.rpm \
-    ; fi && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo
+#COPY --from=ghcr.io/ublue-os/akmods:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
+#RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
+#    wget https://negativo17.org/repos/fedora-multimedia.repo -O /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+#    if [[ "${FEDORA_MAJOR_VERSION}" -ge "39" ]]; then \
+#        rpm-ostree install \
+#            /tmp/akmods-rpms/kmods/*xpadneo*.rpm \
+#            /tmp/akmods-rpms/kmods/*xone*.rpm \
+#            /tmp/akmods-rpms/kmods/*openrazer*.rpm \
+#            /tmp/akmods-rpms/kmods/*v4l2loopback*.rpm \
+#            /tmp/akmods-rpms/kmods/*wl*.rpm \
+#    ; fi && \
+#    # Don't install evdi on asus because of conflicts
+#    if grep -qv "asus" <<< "${AKMODS_FLAVOR}"; then \
+#        rpm-ostree install \
+#            /tmp/akmods-rpms/kmods/*evdi*.rpm \
+#    ; fi && \
+#    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo
 
 # Starship Shell Prompt
 RUN curl -Lo /tmp/starship.tar.gz "https://github.com/starship/starship/releases/latest/download/starship-x86_64-unknown-linux-gnu.tar.gz" && \
