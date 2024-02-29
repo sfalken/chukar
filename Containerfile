@@ -1,7 +1,7 @@
 # Chukar Containerfile
 
 ARG IMAGE_NAME="${IMAGE_NAME:-chukar}"
-ARG IMAGE_MAJOR_VERSION="${IMAGE_MAJOR_VERSION:-rawhide}"
+ARG IMAGE_MAJOR_VERSION="${IMAGE_MAJOR_VERSION:-40}"
 
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG BASE_IMAGE_REGISTRY="${BASE_IMAGE_NAME:-quay.io/fedora-ostree-desktops}"
@@ -87,10 +87,9 @@ COPY workarounds.sh \
 RUN sysctl -p
 
 #  repo to be removed when F40 releases
-RUN wget https://copr.fedorainfracloud.org/coprs/ganto/lxc4/repo/fedora-rawhide/ganto-lxc4-fedora-rawhide.repo -O /etc/yum.repos.d/ganto-lxc4-fedora-rawhide.repo && \
-    wget https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-rawhide/ublue-os-staging-fedora-rawhide.repo -O /etc/yum.repos.d/ublue-os-staging-fedora-rawhide.repo && \
-    wget https://copr.fedorainfracloud.org/coprs/karmab/kcli/repo/fedora-rawhide/karmab-kcli-fedora-rawhide.repo -O /etc/yum.repos.d/karmab-kcli-fedora-rawhide.repo && \
-    wget https://copr.fedorainfracloud.org/coprs/sfaulken/chukar/repo/fedora-rawhide/sfaulken-chukar-fedora-rawhide.repo -O /etc/yum.repos.d/sfaulken-chukar-fedora-rawhide.repo
+RUN wget https://copr.fedorainfracloud.org/coprs/ganto/lxc4/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
+    wget https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
+    wget https://copr.fedorainfracloud.org/coprs/karmab/kcli/repo/fedora-"${FEDORA_MAJOR_VERSION}"/karmab-kcli-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/karmab-kcli-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
 
 # Handle packages via packages.json
 RUN /tmp/build.sh && \
@@ -130,10 +129,9 @@ RUN systemctl enable docker.socket && \
 RUN /tmp/workarounds.sh
 
 # Clean up repos, everything is on the image so we don't need them
-RUN rm -f /etc/yum.repos.d/ublue-os-staging-fedora-rawhide.repo && \
-    rm -f /etc/yum.repos.d/ganto-lxc4-fedora-rawhide.repo && \
-    rm -f /etc/yum.repos.d/karmab-kcli-fedora-rawhide.repo && \
-    rm -f /etc/yum.repos.d/sfaulken-chukar-fedora-rawhide.repo && \
+RUN rm -f /etc/yum.repos.d/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
+    rm -f /etc/yum.repos.d/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
+    rm -f /etc/yum.repos.d/karmab-kcli-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     rm -f /etc/yum.repos.d/vscode.repo && \
     rm -f /etc/yum.repos.d/docker-ce.repo && \
     rm -f /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo && \
