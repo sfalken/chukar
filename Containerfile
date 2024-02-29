@@ -1,73 +1,97 @@
-# Chukar Containerfile
-
-ARG IMAGE_NAME="${IMAGE_NAME:-chukar}"
-ARG IMAGE_MAJOR_VERSION="${IMAGE_MAJOR_VERSION:-40}"
-
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
-ARG BASE_IMAGE_REGISTRY="${BASE_IMAGE_NAME:-quay.io/fedora-ostree-desktops}"
-ARG BASE_IMAGE="${BASE_IMAGE_REGISTRY}/${BASE_IMAGE_NAME}"
+ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
+ARG AKMODS_FLAVOR="${AKMODS_FLAVOR:-main}"
+ARG SOURCE_IMAGE="${SOURCE_IMAGE:-$BASE_IMAGE_NAME-$IMAGE_FLAVOR}"
+ARG BASE_IMAGE="ghcr.io/ublue-os/${SOURCE_IMAGE}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-40}"
+ARG TARGET_BASE="${TARGET_BASE:-chukar}"
 
-FROM ${BASE_IMAGE}:${IMAGE_MAJOR_VERSION} AS chukar
+## chukar image section
+FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS bluefin
+
 ARG IMAGE_NAME="${IMAGE_NAME}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
+ARG AKMODS_FLAVOR="${AKMODS_FLAVOR}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 ARG PACKAGE_LIST="chukar"
 
-# Remove the rpm provided Firefox, Discover backend and other things we don't want
-COPY --from=ghcr.io/ublue-os/config:latest /rpms /tmp/rpms
-RUN rpm-ostree install \
-        /tmp/rpms/*.rpm
+COPY usr /usr
+COPY just /tmp/just
+COPY etc/skel/.config/autostart/ /etc/skel/.config/autostart/
+COPY packages.json /tmp/packages.json
+COPY build.sh /tmp/build.sh
+COPY image-info.sh /tmp/image-info.sh
+# Copy ublue-update.toml to tmp first, to avoid being overwritten.
+COPY usr/etc/ublue-update/ublue-update.toml /tmp/ublue-update.toml
 
-# Install flathub repo definition file
-RUN mkdir -p /usr/etc/flatpak/remotes.d && \
-    wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/etc/flatpak/remotes.d
+# Add ublue kmods, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
+COPY --from=ghcr.io/ublue-os/akmods:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
+RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
+    wget https://negativo17.org/repos/fedora-multimedia.repo -O /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+    if [[ "${FEDORA_MAJOR_VERSION}" -ge "39" ]]; then \
+        rpm-ostree install \
+            /tmp/akmods-rpms/kmods/*xpadneo*.rpm \
+            /tmp/akmods-rpms/kmods/*xone*.rpm \
+            /tmp/akmods-rpms/kmods/*openrazer*.rpm \
+            /tmp/akmods-rpms/kmods/*v4l2loopback*.rpm \
+            /tmp/akmods-rpms/kmods/*wl*.rpm \
+    ; fi && \
+    # Don't install evdi on asus because of conflicts
+    if grep -qv "asus" <<< "${AKMODS_FLAVOR}"; then \
+        rpm-ostree install \
+            /tmp/akmods-rpms/kmods/*evdi*.rpm \
+    ; fi && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo
 
 # Starship Shell Prompt
 RUN curl -Lo /tmp/starship.tar.gz "https://github.com/starship/starship/releases/latest/download/starship-x86_64-unknown-linux-gnu.tar.gz" && \
-    tar -zxf /tmp/starship.tar.gz -C /tmp && \
-    install -c -m 0755 /tmp/starship /usr/bin && \
-    echo 'eval "$(starship init bash)"' >> /etc/bashrc
+  tar -xzf /tmp/starship.tar.gz -C /tmp && \
+  install -c -m 0755 /tmp/starship /usr/bin && \
+  echo 'eval "$(starship init bash)"' >> /etc/bashrc
 
-# Copy files into Container
-COPY usr /usr
-COPY etc/skel/.config/autostart/ /etc/skel/.config/autostart/
-COPY just /tmp/just
-COPY build.sh /tmp/build.sh
-COPY image-info.sh /tmp/image-info.sh
-COPY usr/etc/ublue-update/ublue-update.toml /tmp/ublue-update.toml
-COPY packages.json /tmp/packages.json
-
-
-RUN /tmp/build.sh && \
+RUN wget https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
+    /tmp/build.sh && \
     /tmp/image-info.sh && \
-    find /tmp/just -iname '*.just' -exec printf "\n\n" \; -exec cat {} \; >> /usr/share/ublue-os/just/60-custom.just && \
-    pip install --prefix=/usr/ topgrade && \
+    pip install --prefix=/usr topgrade && \
+    rpm-ostree install ublue-update && \
+    mkdir -p /usr/etc/flatpak/remotes.d && \
+    wget -q https://dl.flathub.org/repo/flathub.flatpakrepo -P /usr/etc/flatpak/remotes.d && \
     cp /tmp/ublue-update.toml /usr/etc/ublue-update/ublue-update.toml && \
+    mkdir -p /usr/etc/containers/systemd/users && \
+    wget -q https://raw.githubusercontent.com/ublue-os/toolboxes/main/quadlets/bluefin-cli/bluefin-cli.container -P /usr/etc/containers/systemd/users && \
+    printf "\n\n[Install]\nWantedBy=bluefin-cli.target" >> /usr/etc/containers/systemd/users/bluefin-cli.container  && \
+    sed -i '/AutoUpdate.*/ s/^#*/#/' /usr/etc/containers/systemd/users/bluefin-cli.container && \
+    sed -i 's/ContainerName=bluefin/ContainerName=bluefin-cli/' /usr/etc/containers/systemd/users/bluefin-cli.container && \
     systemctl enable rpm-ostree-countme.service && \
+    systemctl enable tailscaled.service && \
     systemctl enable dconf-update.service && \
+    systemctl enable ublue-update.timer && \
+    systemctl enable ublue-system-setup.service && \
+    systemctl enable ublue-system-flatpak-manager.service && \
     systemctl --global enable ublue-user-flatpak-manager.service && \
     systemctl --global enable ublue-user-setup.service && \
     fc-cache -f /usr/share/fonts/ubuntu && \
     fc-cache -f /usr/share/fonts/inter && \
+    find /tmp/just -iname '*.just' -exec printf "\n\n" \; -exec cat {} \; >> /usr/share/ublue-os/just/60-custom.just && \
+    rm -f /etc/yum.repos.d/tailscale.repo && \
+    rm -f /etc/yum.repos.d/charm.repo && \
+    rm -f /etc/yum.repos.d/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     echo "Hidden=true" >> /usr/share/applications/fish.desktop && \
     echo "Hidden=true" >> /usr/share/applications/htop.desktop && \
     echo "Hidden=true" >> /usr/share/applications/nvtop.desktop && \
-    sed -i '/^PRETTY_NAME/s/Kinoite/Chukar/' /usr/lib/os-release
-
-
-# Clean up temp files and finalize container build.
-RUN rm -rf \
-        /tmp/* \
-        /var/* && \
+    echo "Hidden=true" >> /usr/share/applications/gnome-system-monitor.desktop && \
+    sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/user.conf && \
+    sed -i 's/#DefaultTimeoutStopSec.*/DefaultTimeoutStopSec=15s/' /etc/systemd/system.conf && \
+    sed -i '/^PRETTY_NAME/s/Kinoite/Chukar/' /usr/lib/os-release && \
+    rm -rf /tmp/* /var/* && \
     ostree container commit && \
     mkdir -p /var/tmp && \
     chmod -R 1777 /var/tmp
 
-# chukar-dx developer experience image
-FROM chukar as chukar-dx
+## bluefin-dx developer edition image section
+FROM chukar AS chukar-dx
 
 ARG IMAGE_NAME="${IMAGE_NAME}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR}"
@@ -76,27 +100,28 @@ ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 ARG PACKAGE_LIST="chukar-dx"
 
+# dx specific files come from the dx directory in this repo
 COPY dx/usr /usr
 COPY dx/etc/yum.repos.d/ /etc/yum.repos.d/
 COPY workarounds.sh \
      packages.json \
      build.sh \
      image-info.sh \
-     /tmp
+    /tmp
 
-# Apply IP Forwarding before installing Docker to prevent breaking LXC networking
+# Apply IP Forwarding before installing Docker to prevent messing with LXC networking
 RUN sysctl -p
 
-#  repo to be removed when F40 releases
 RUN wget https://copr.fedorainfracloud.org/coprs/ganto/lxc4/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     wget https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     wget https://copr.fedorainfracloud.org/coprs/karmab/kcli/repo/fedora-"${FEDORA_MAJOR_VERSION}"/karmab-kcli-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/karmab-kcli-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
+    wget https://copr.fedorainfracloud.org/coprs/che/nerd-fonts/repo/fedora-"${FEDORA_MAJOR_VERSION}"/che-nerd-fonts-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_che-nerd-fonts-"${FEDORA_MAJOR_VERSION}".repo
 
 # Handle packages via packages.json
 RUN /tmp/build.sh && \
     /tmp/image-info.sh
 
-## power-profiles-deamon with amd p-state support, will be removed when upstreamed.
+## power-profiles-daemon with amd p-state support, remove when this is upstream
 RUN rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:ublue-os:staging power-profiles-daemon
 
 RUN wget https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -O /tmp/docker-compose && \
@@ -139,4 +164,3 @@ RUN rm -f /etc/yum.repos.d/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".rep
     rm -f /etc/yum.repos.d/fedora-cisco-openh264.repo && \
     rm -rf /tmp/* /var/* && \
     ostree container commit
-
